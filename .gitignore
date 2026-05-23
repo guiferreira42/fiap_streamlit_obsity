@@ -71,3 +71,6 @@ venv.bak/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Conda local backup
+environment.yml.bak
