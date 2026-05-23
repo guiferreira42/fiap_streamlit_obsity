@@ -214,8 +214,8 @@ with tab2:
                 family_history = st.selectbox("Histórico Familiar de Sobrepeso", ["Sim", "Não"])
                 
                 st.subheader("Hábitos Físicos")
-                faf = st.slider("Frequência de atividade física (0-6)", min_value=0, max_value=6, value=2)
-                tue = st.slider("Tempo usando dispositivos (0-6)", min_value=0, max_value=6, value=2)
+                faf_desc = st.selectbox("Frequência semanal de atividade física", ["Nenhuma", "1 a 2 vezes/semana", "3 a 4 vezes/semana", "5 ou mais vezes/semana"], index=1)
+                tue_desc = st.selectbox("Tempo diário usando dispositivos eletrônicos", ["0 a 2 horas/dia", "3 a 5 horas/dia", "Mais de 5 horas/dia"], index=1)
                 mtrans = st.selectbox("Meio de transporte", ["Transporte Público", "Caminhada", "Automóvel", "Motocicleta", "Bicicleta"])
             
             with col2:
@@ -225,7 +225,7 @@ with tab2:
                 ncp = st.slider("Número de refeições principais (1-4)", min_value=1, max_value=4, value=3)
                 caec = st.selectbox("Frequência que se alimenta entre as refeições", ["Não consome", "Às vezes", "Frequentemente", "Sempre"])
                 smoke = st.selectbox("Fumante", ["Sim", "Não"])
-                ch2o = st.slider("Consumo de água diário (1-4L)", min_value=1.0, max_value=4.0, value=2.0, step=0.1, format="%.1f")
+                ch2o_desc = st.selectbox("Consumo diário de água", ["Menos de 1 L/dia", "1 a 2 L/dia", "Mais de 2 L/dia"], index=1)
                 calc = st.selectbox("Consumo de álcool", ["Não consome", "Às vezes", "Frequentemente", "Sempre"])
                 
             submit = st.form_submit_button("Realizar Predição")
@@ -253,6 +253,22 @@ with tab2:
                     "Motocicleta": "Motorbike",
                     "Bicicleta": "Bike"
                 }
+                faf_map = {
+                    "Nenhuma": 0.0,
+                    "1 a 2 vezes/semana": 1.0,
+                    "3 a 4 vezes/semana": 2.0,
+                    "5 ou mais vezes/semana": 3.0
+                }
+                tue_map = {
+                    "0 a 2 horas/dia": 0.0,
+                    "3 a 5 horas/dia": 1.0,
+                    "Mais de 5 horas/dia": 2.0
+                }
+                ch2o_map = {
+                    "Menos de 1 L/dia": 1.0,
+                    "1 a 2 L/dia": 2.0,
+                    "Mais de 2 L/dia": 3.0
+                }
                 
                 # Criar o dataframe com o input mapeado
                 input_data = {
@@ -264,10 +280,10 @@ with tab2:
                     'NCP': float(ncp),
                     'CAEC': caec_map[caec],
                     'SMOKE': yes_no_map[smoke],
-                    'CH2O': float(ch2o),
+                    'CH2O': ch2o_map[ch2o_desc],
                     'SCC': df['SCC'].mode()[0] if not df.empty and 'SCC' in df.columns else 'no',
-                    'FAF': float(faf),
-                    'TUE': float(tue),
+                    'FAF': faf_map[faf_desc],
+                    'TUE': tue_map[tue_desc],
                     'CALC': calc_map[calc],
                     'MTRANS': mtrans_map[mtrans]
                 }
@@ -300,22 +316,75 @@ with tab2:
                     st.markdown("---")
                     st.subheader("🎯 Resultado do Diagnóstico")
                     
-                    res_col1, res_col2 = st.columns(2)
-                    with res_col1:
-                        st.metric(label="Resultado Previsto pelo Modelo", value=pred_class_pt)
-                    with res_col2:
-                        st.metric(label="Seu IMC (Índice de Massa Corporal)", value=f"{bmi:.1f}")
-                    
                     # Exibir Dicas baseadas no IMC calculado
                     dicas_info = obter_dicas_imc(bmi)
                     
-                    if dicas_info["cor"] == "success":
-                        st.success(f"**Classificação do seu IMC:** {dicas_info['categoria']}")
-                    elif dicas_info["cor"] == "warning":
-                        st.warning(f"**Classificação do seu IMC:** {dicas_info['categoria']}")
-                    else:
-                        st.error(f"**Classificação do seu IMC:** {dicas_info['categoria']}")
+                    res_col1, res_col2, res_col3 = st.columns(3)
+                    
+                    with res_col1:
+                        st.markdown(
+                            f"""
+                            <div style="
+                                background-color: rgba(16, 185, 129, 0.08);
+                                border: 1px solid rgba(16, 185, 129, 0.2);
+                                border-left: 5px solid #10b981;
+                                padding: 15px;
+                                border-radius: 8px;
+                                min-height: 110px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            ">
+                                <span style="font-size: 13px; color: #a7f3d0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Classificação do IMC</span>
+                                <span style="font-size: 22px; font-weight: bold; color: #10b981; margin-top: 5px; display: block;">{dicas_info['categoria']}</span>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
                         
+                    with res_col2:
+                        st.markdown(
+                            f"""
+                            <div style="
+                                background-color: rgba(28, 100, 242, 0.08);
+                                border: 1px solid rgba(28, 100, 242, 0.2);
+                                border-left: 5px solid #1c64f2;
+                                padding: 15px;
+                                border-radius: 8px;
+                                min-height: 110px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            ">
+                                <span style="font-size: 13px; color: #93c5fd; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Resultado Previsto</span>
+                                <span style="font-size: 22px; font-weight: bold; color: #3b82f6; margin-top: 5px; display: block;">{pred_class_pt}</span>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        
+                    with res_col3:
+                        st.markdown(
+                            f"""
+                            <div style="
+                                background-color: rgba(28, 100, 242, 0.08);
+                                border: 1px solid rgba(28, 100, 242, 0.2);
+                                border-left: 5px solid #1c64f2;
+                                padding: 15px;
+                                border-radius: 8px;
+                                min-height: 110px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            ">
+                                <span style="font-size: 13px; color: #93c5fd; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Seu IMC</span>
+                                <span style="font-size: 24px; font-weight: bold; color: #3b82f6; margin-top: 5px; display: block;">{bmi:.1f}</span>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        
+                    st.markdown("<br>", unsafe_allow_html=True)
                     st.markdown("#### 💡 Dicas de Saúde e Bem-Estar Baseadas no seu IMC:")
                     for dica in dicas_info["dicas"]:
                         st.markdown(f"- {dica}")
