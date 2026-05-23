@@ -203,7 +203,7 @@ with tab2:
     
     if modelo is not None and not df.empty:
         with st.form("form_predicao"):
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             
             with col1:
                 st.subheader("Dados Pessoais")
@@ -213,12 +213,13 @@ with tab2:
                 weight = st.number_input("Peso em kg", min_value=30.0, max_value=200.0, value=70.0, step=1.0)
                 family_history = st.selectbox("Histórico Familiar de Sobrepeso", ["Sim", "Não"])
                 
+            with col2:
                 st.subheader("Hábitos Físicos")
                 faf_desc = st.selectbox("Frequência semanal de atividade física", ["Nenhuma", "1 a 2 vezes/semana", "3 a 4 vezes/semana", "5 ou mais vezes/semana"], index=1)
                 tue_desc = st.selectbox("Tempo diário usando dispositivos eletrônicos", ["0 a 2 horas/dia", "3 a 5 horas/dia", "Mais de 5 horas/dia"], index=1)
                 mtrans = st.selectbox("Meio de transporte", ["Transporte Público", "Caminhada", "Automóvel", "Motocicleta", "Bicicleta"])
             
-            with col2:
+            with col3:
                 st.subheader("Hábitos Alimentares")
                 favc = st.selectbox("Consome alimentos calóricos frequente", ["Sim", "Não"])
                 fcvc = st.slider("Frequência de consumo de vegetais (1-3)", min_value=1, max_value=3, value=2)
