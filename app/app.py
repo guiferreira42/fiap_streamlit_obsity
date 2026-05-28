@@ -47,7 +47,6 @@ tab1, tab2, tab3 = st.tabs(["📊 Dashboard Analítico", "🔮 Predição", "ℹ
 with tab1:
     st.header("Dashboard Analítico")
     if not df.empty:
-        # Criar dataframe traduzido para visualização premium 100% em PT-BR
         df_translated = df.copy()
         
         translation_dict = {
@@ -291,7 +290,7 @@ with tab2:
                 
                 input_df = pd.DataFrame([input_data])
                 
-                # Calcular BMI para exibição
+                # Calcular IMC para exibição
                 bmi = weight / (height ** 2)
                 
                 # Predição
