@@ -1,0 +1,4 @@
+GitHub : https://github.com/guiferreira42/fiap_streamlit_obsity/tree/main
+
+
+streamlit : https://fiapappobsity-frub6iuo3nvqnveb8n3tax.streamlit.app/
